@@ -1,60 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="agenda" default="compilar">
+	
+	<property file="build.properties" />
+	
+	<path id="classpath-compilacao">
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="classpath-compilacao-teste">
+		<path refid="classpath-compilacao" />
+		<pathelement path="${build.dir}/${classes.dir}" />
+		<fileset dir="lib-teste">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="classpath-execucao-teste">
+		<path refid="classpath-compilacao-teste" />
+		<pathelement path="${build.dir}/${classes-teste.dir}" />
+	</path>
+
 
 	<target name="limpar">
-		<delete dir="build" />
-		<mkdir dir="build" />
-		<mkdir dir="build/classes" />
-		<mkdir dir="build/classes-teste" />
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/${classes.dir}" />
+		<mkdir dir="${build.dir}/classes-teste" />
 	</target>
 
 	<target name="compilar" depends="limpar">
-		<javac destdir="build/classes" srcdir="src">
-			<classpath>
-				<fileset dir="WebContent/WEB-INF/lib">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
+		<javac destdir="${build.dir}/${classes.dir}" srcdir="src">
+			<classpath refid="classpath-compilacao" />
 		</javac>
 	</target>
 
 	<target name="compilar-teste" depends="compilar">
-		<javac destdir="build/classes-teste" srcdir="src-teste">
-			<classpath>
-				<pathelement path="build/classes" />
-				<fileset dir="lib-teste">
-					<include name="*.jar" />
-				</fileset>
-				<fileset dir="WebContent/WEB-INF/lib">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
+		<javac destdir="${build.dir}/${classes-teste.dir}" srcdir="src-teste">
+			<classpath refid="classpath-compilacao-teste" />
 		</javac>
 	</target>
 
-
 	<target name="executar-teste" depends="compilar-teste">
 		<junit printsummary="true" showoutput="true">
-			<formatter type="plain"/>
+			<formatter type="plain" />
 			<batchtest>
 				<fileset dir="src-teste">
 					<include name="**/*Test.java" />
 				</fileset>
 			</batchtest>
-			<classpath>
-				<pathelement path="build/classes-teste" />
-				<pathelement path="build/classes" />
-
-				<fileset dir="lib-teste">
-					<include name="*.jar" />
-				</fileset>
-
-				<fileset dir="WebContent/WEB-INF/lib">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
-
-
+			<classpath refid="classpath-execucao-teste" />
 		</junit>
 	</target>
 
