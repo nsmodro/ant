@@ -27,10 +27,19 @@
 		<delete dir="${build.dir}" />
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.dir}/${classes.dir}" />
-		<mkdir dir="${build.dir}/classes-teste" />
+		<mkdir dir="${build.dir}/${classes-teste.dir}" />
+	</target>
+	
+	<target name="copiar-recursos" depends="limpar">
+	    <copy  todir="build/classes">
+	        <fileset dir="src-teste">
+	            <include name="hibernate.cfg.xml"/>
+	            <include name="log4j.xml"/>
+	        </fileset> 
+	    </copy>
 	</target>
 
-	<target name="compilar" depends="limpar">
+	<target name="compilar" depends="copiar-recursos">
 		<javac destdir="${build.dir}/${classes.dir}" srcdir="src">
 			<classpath refid="classpath-compilacao" />
 		</javac>
@@ -52,6 +61,15 @@
 			</batchtest>
 			<classpath refid="classpath-execucao-teste" />
 		</junit>
+	</target>
+	
+	<target name="empacotar" depends="compilar">
+		<war destfile="build/agenda.war" webxml="WebContente/WEB-INF/web.xml">
+			<classes dir="bild/classes" />
+			<fileset dir="WebContent">
+				<exclude name="WEB-INF/classes/"/>
+			</fileset>
+		</war>
 	</target>
 
 </project>
